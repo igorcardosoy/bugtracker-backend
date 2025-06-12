@@ -1,2 +1,0 @@
-# bugtracker-backend
-bugtracker-backend
