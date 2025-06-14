@@ -4,6 +4,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.filter.AuthEntryPointJwt;
 import br.com.ifsp.tsi.bugtrackerbackend.filter.AuthTokenFilter;
 import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
@@ -16,6 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
+@Configuration
 public class SecurityConfiguration {
 
     private final AuthEntryPointJwt authEntryPoint;

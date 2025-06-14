@@ -1,6 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.enums;
 
-public enum RoleType {
+public enum UserRole {
     USER,
     ADMIN,
 }
