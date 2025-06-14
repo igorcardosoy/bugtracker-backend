@@ -24,7 +24,7 @@ public class UserService implements UserDetailsService {
         var user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + email));
 
         return new UserDto(
-                user.getId(),
+                user.getUserId(),
                 user.getName(),
                 user.getEmail(),
                 user.getPassword(),

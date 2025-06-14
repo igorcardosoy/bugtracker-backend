@@ -12,10 +12,11 @@ import lombok.Setter;
 @Data
 public class Role {
     @Id
+    @Column(name = "role_id")
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)
     @Getter(AccessLevel.NONE)
-    private Long id;
+    private Long roleId;
 
     @Enumerated(EnumType.STRING)
     @Column(unique = true)

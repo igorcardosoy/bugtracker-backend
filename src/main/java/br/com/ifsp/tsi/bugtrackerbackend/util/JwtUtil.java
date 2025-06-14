@@ -63,7 +63,6 @@ public class JwtUtil {
 
         return new JwtResponse(
                 jwt,
-                userDto.id(),
                 userDto.email(),
                 roles
         );
