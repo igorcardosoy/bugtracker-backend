@@ -57,10 +57,6 @@ public class UserService implements UserDetailsService {
         return (UserDto) authentication.getPrincipal();
     }
 
-    public List<User> getAll() {
-        return userRepository.getAll();
-    }
-
     public ProfilePictureDto getUserProfilePicture(UserDto userDTO) throws IOException {
         if (userDTO.profilePicture() == null || userDTO.profilePicture().isEmpty())
             throw new ProfilePictureException("Foto de perfil não encontrada.", HttpStatus.NOT_FOUND);

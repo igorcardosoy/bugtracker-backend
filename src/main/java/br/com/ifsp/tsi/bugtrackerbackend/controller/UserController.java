@@ -28,9 +28,9 @@ public class UserController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<User>> getUsers() {
+    public ResponseEntity<UserDto> getUsers() {
         return ResponseEntity.ok(
-                userService.getAll()
+                userService.getUserSignedIn()
         );
     }
 
