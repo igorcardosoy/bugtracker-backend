@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -25,4 +26,17 @@ public class User {
 
     @ManyToMany(fetch = FetchType.EAGER)
     private Set<Role> roles;
+
+    @OneToMany(mappedBy = "user")
+//    @JoinColumn(name = "ticket_id")
+    private List<Ticket> tickets;
+
+    @OneToMany(mappedBy = "sender")
+//    @JoinColumn(name = "message_id")
+    private List<Message> messages;
+
+    //@OneToMany(targetEntity = Rating.class)
+    @OneToMany(mappedBy = "sender")
+//    @JoinColumn(name = "rating_id")
+    private List<Rating> ratings;
 }
