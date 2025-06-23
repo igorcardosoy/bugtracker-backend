@@ -2,19 +2,20 @@ package br.com.ifsp.tsi.bugtrackerbackend.service;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.LoginRequest;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.ProfilePictureException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
+import br.com.ifsp.tsi.bugtrackerbackend.repository.MessageRepository;
+import br.com.ifsp.tsi.bugtrackerbackend.repository.RatingRepository;
+import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.UserRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
@@ -23,20 +24,31 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 public class UserService implements UserDetailsService {
 
     private final UserRepository userRepository;
+    private final RatingRepository ratingRepository;
+    private final TicketRepository ticketRepository;
+    private final MessageRepository messageRepository;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(
+            UserRepository userRepository,
+            RatingRepository ratingRepository,
+            TicketRepository ticketRepository,
+            MessageRepository messageRepository
+    ) {
         this.userRepository = userRepository;
+        this.ratingRepository = ratingRepository;
+        this.ticketRepository = ticketRepository;
+        this.messageRepository = messageRepository;
     }
 
     @Override
     public UserDto loadUserByUsername(String email) throws UsernameNotFoundException {
-        var user = userRepository.findByEmail(email).orElseThrow(() -> new UsernameNotFoundException("User Not Found with username: " + email));
+        var user = userRepository.findByEmail(email).orElseThrow(() ->
+                new UsernameNotFoundException("User Not Found with username: " + email));
 
         return new UserDto(
                 user.getUserId(),
@@ -44,8 +56,7 @@ public class UserService implements UserDetailsService {
                 user.getEmail(),
                 user.getPassword(),
                 user.getProfilePicture(),
-                user.getRoles().stream()
-                        .map(role -> new SimpleGrantedAuthority(role.getName().name()))
+                user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName().name()))
                         .toList()
         );
     }
@@ -69,18 +80,29 @@ public class UserService implements UserDetailsService {
     }
 
     public List<Rating> getUserRatings(UserDto userDTO) {
-        return null;
+        var ratings = ratingRepository.findAll();
+
+        return ratings.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+                .toList();
     }
 
     public List<Ticket> getUserTickets(UserDto userDTO) {
-        return null;
+        var tickets = ticketRepository.findAll();
+
+        return tickets.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+                .toList();
     }
 
     public List<Message> getUserMessages(UserDto userDTO) {
-        return null;
+        var messages = messageRepository.findAll();
+
+        return messages.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+                .toList();
     }
 
-    public User updateUser(LoginRequest updateUserRequest) {
-        return null;
+    public User updateUser(UserDto updateUserRequest) {
+        var user = new User(updateUserRequest);
+
+        return userRepository.save(user);
     }
 }

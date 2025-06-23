@@ -1,5 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
+import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -47,4 +48,13 @@ public class Ticket {
     @ManyToOne
     @JoinColumn(name = "reicever_id")
     private User reicever;
+
+    private LocalDateTime lastUpdate;
+
+    public Ticket(TicketDto request) {
+        this.ticketId = request.ticketId();
+        this.description = request.description();
+        this.ticketStatus = request.ticketStatus();
+        this.lastUpdate = request.lastUpdate();
+    }
 }

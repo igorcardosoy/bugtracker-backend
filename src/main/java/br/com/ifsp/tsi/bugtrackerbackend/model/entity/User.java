@@ -1,5 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -39,4 +40,12 @@ public class User {
     @OneToMany(mappedBy = "sender")
 //    @JoinColumn(name = "rating_id")
     private List<Rating> ratings;
+
+    public User(UserDto request) {
+        this.userId = request.id();
+        this.email = request.email();
+        this.name = request.name();
+        this.password = request.password();
+        this.profilePicture = request.profilePicture();
+    }
 }
