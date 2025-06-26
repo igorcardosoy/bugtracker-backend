@@ -2,15 +2,11 @@ package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.JwtResponse;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.LoginRequest;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.RegisterRequest;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
 import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -76,7 +72,7 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<User> updateUser(@RequestBody LoginRequest updateUserRequest) {
+    public ResponseEntity<User> updateUser(@RequestBody UserDto updateUserRequest) {
         return ResponseEntity.ok(
                 userService.updateUser(updateUserRequest)
         );
