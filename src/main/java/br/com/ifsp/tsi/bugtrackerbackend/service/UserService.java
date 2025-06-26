@@ -73,13 +73,8 @@ public class UserService implements UserDetailsService {
         if (userDTO.profilePicturePath() == null || userDTO.profilePicturePath().isEmpty())
             throw new ProfilePictureException("Foto de perfil não encontrada.", HttpStatus.NOT_FOUND);
 
-
         String uploadDir = "uploads/profile-pictures/";
-<<<<<<< feature/adiciona_endpoints_base
         File file = new File(uploadDir + userDTO.profilePicturePath());
-=======
-        File file = new File(uploadDir + userDTO.profilePicture());
->>>>>>> develop
 
         return new ProfilePictureDto(Files.readAllBytes(file.toPath()), "image/png", String.valueOf(file.length()));
     }
