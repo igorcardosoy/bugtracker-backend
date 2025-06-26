@@ -75,7 +75,11 @@ public class UserService implements UserDetailsService {
 
 
         String uploadDir = "uploads/profile-pictures/";
+<<<<<<< feature/adiciona_endpoints_base
         File file = new File(uploadDir + userDTO.profilePicturePath());
+=======
+        File file = new File(uploadDir + userDTO.profilePicture());
+>>>>>>> develop
 
         return new ProfilePictureDto(Files.readAllBytes(file.toPath()), "image/png", String.valueOf(file.length()));
     }
