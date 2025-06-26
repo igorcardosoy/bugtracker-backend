@@ -74,7 +74,7 @@ public class UserService implements UserDetailsService {
             throw new ProfilePictureException("Foto de perfil não encontrada.", HttpStatus.NOT_FOUND);
 
 
-        String uploadDir = "uploads/profile_pictures/";
+        String uploadDir = "uploads/profile-pictures/";
         File file = new File(uploadDir + userDTO.profilePicturePath());
 
         return new ProfilePictureDto(Files.readAllBytes(file.toPath()), "image/png", String.valueOf(file.length()));
