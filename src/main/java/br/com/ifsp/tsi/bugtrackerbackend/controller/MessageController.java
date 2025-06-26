@@ -42,7 +42,7 @@ public class MessageController {
     @PatchMapping("/{messageId}")
     public ResponseEntity<Message> updateMessage (
             @PathVariable("messageId") long messageId,
-            @RequestBody String message
+            @RequestParam String message
     ) {
         return ResponseEntity.ok(
                 messageService.updateMessage(messageId, message)

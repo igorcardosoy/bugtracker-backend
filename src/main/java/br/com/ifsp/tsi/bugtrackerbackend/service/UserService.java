@@ -83,21 +83,21 @@ public class UserService implements UserDetailsService {
     public List<Rating> getUserRatings(UserDto userDTO) {
         var ratings = ratingRepository.findAll();
 
-        return ratings.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+        return ratings.stream().filter(r -> r.getSender().getUserId().equals(userDTO.userId()))
                 .toList();
     }
 
     public List<Ticket> getUserTickets(UserDto userDTO) {
         var tickets = ticketRepository.findAll();
 
-        return tickets.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+        return tickets.stream().filter(r -> r.getSender().getUserId().equals(userDTO.userId()))
                 .toList();
     }
 
     public List<Message> getUserMessages(UserDto userDTO) {
         var messages = messageRepository.findAll();
 
-        return messages.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+        return messages.stream().filter(r -> r.getSender().getUserId().equals(userDTO.userId()))
                 .toList();
     }
 

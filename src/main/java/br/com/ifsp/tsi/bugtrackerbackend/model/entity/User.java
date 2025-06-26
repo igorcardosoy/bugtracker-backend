@@ -49,7 +49,7 @@ public class User {
     private List<Rating> ratings;
 
     public User(UserDto request) {
-        this.userId = request.id();
+        this.userId = request.userId();
         this.email = request.email();
         this.name = request.name();
         this.password = request.password();
