@@ -2,6 +2,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -27,12 +28,13 @@ public class Ticket {
 
     @OneToOne()
     @JoinColumn(name = "ticket_category_id")
-    private TicketCategory ticketCategoryId;
+    private TicketCategory ticketCategory;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus ticketStatus;
 
     @OneToMany(mappedBy = "ticket")
+    @JsonBackReference
     private List<Message> messages;
 
     private LocalDateTime timestamp;
@@ -43,6 +45,7 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
+    @JsonBackReference
     private User sender;
 
     @ManyToOne
@@ -51,10 +54,12 @@ public class Ticket {
 
     private LocalDateTime lastUpdate;
 
-    public Ticket(TicketDto request) {
-        this.ticketId = request.ticketId();
+    public Ticket(TicketDto request, User user, TicketCategory category) {
+        this.user = user;
+        this.sender = user;
+        this.ticketCategory = category;
         this.description = request.description();
         this.ticketStatus = request.ticketStatus();
-        this.lastUpdate = request.lastUpdate();
+        this.timestamp = request.timestamp();
     }
 }

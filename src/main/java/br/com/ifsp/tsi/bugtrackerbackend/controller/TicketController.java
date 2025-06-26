@@ -4,6 +4,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
 import br.com.ifsp.tsi.bugtrackerbackend.service.TicketService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -31,15 +32,14 @@ public class TicketController {
     public ResponseEntity<Ticket> createTicket(
             @RequestBody TicketDto request
     ) {
-        return ResponseEntity.ok(
-                ticketService.createTicket(request)
-        );
+        return ResponseEntity.status(HttpStatus.CREATED)
+                             .body(ticketService.createTicket(request));
     }
 
     @PatchMapping("/{ticketId}/status")
     public ResponseEntity<Ticket> updateTicketStatus (
             @PathVariable("ticketId") long ticketId,
-            @RequestBody TicketStatus status
+            @RequestParam TicketStatus status
     ) {
         return ResponseEntity.ok(
                 ticketService. updateTicketStatus(ticketId, status)
@@ -50,8 +50,8 @@ public class TicketController {
     public ResponseEntity<Ticket> deleteTicket (
             @PathVariable Long ticketId
     ) {
-        return ResponseEntity.ok(
-                ticketService.deleteTicket(ticketId)
-        );
+        ticketService.deleteTicket(ticketId);
+
+        return ResponseEntity.noContent().build();
     }
 }

@@ -5,8 +5,9 @@ import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
 import java.time.LocalDateTime;
 
 public record TicketDto(
-        long ticketId,
+        long senderId,
+        long categoryId,
         String description,
         TicketStatus ticketStatus,
-        LocalDateTime lastUpdate
+        LocalDateTime timestamp
 ) { }

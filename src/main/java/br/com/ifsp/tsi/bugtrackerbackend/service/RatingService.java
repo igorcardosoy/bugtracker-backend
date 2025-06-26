@@ -1,6 +1,5 @@
 package br.com.ifsp.tsi.bugtrackerbackend.service;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.RatingDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.RatingRepository;
@@ -29,7 +28,7 @@ public class RatingService {
         var optional = ratingRepository.findById(ratingId);
 
         if (optional.isEmpty())
-            return new Rating();
+            throw new NullPointerException("rating not found");
 
         var rating = optional.get();
 
@@ -45,12 +44,12 @@ public class RatingService {
                 .toList();
     }
 
-    public Rating createRating(long ticketId, RatingDto request) {
+    public Rating createRating(long ticketId,  float ratingValue) {
         var userDto = userService.getUserSignedIn();
         var ticket = ticketService.getTicketById(ticketId);
 
         var user = new User(userDto);
-        var rating = new Rating(request, user, ticket);
+        var rating = new Rating(ratingValue, user, ticket);
 
         return ratingRepository.save(rating);
     }

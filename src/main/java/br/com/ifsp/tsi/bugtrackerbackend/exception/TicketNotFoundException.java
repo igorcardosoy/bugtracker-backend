@@ -1,0 +1,9 @@
+package br.com.ifsp.tsi.bugtrackerbackend.exception;
+
+import org.springframework.http.HttpStatus;
+
+public class TicketNotFoundException extends ExceptionWithHttpCode {
+    public TicketNotFoundException(String message, HttpStatus httpStatus) {
+        super(message, httpStatus);
+    }
+}

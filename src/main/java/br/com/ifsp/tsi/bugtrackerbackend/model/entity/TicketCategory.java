@@ -19,7 +19,7 @@ public class TicketCategory {
     private boolean isActive;
 
     public TicketCategory(TicketCategoryDto request) {
-        this.ticketCategoryId = request.id();
+        this.ticketCategoryId = request.ticketCategoryId();
         this.description = request.description();
         this.isActive = request.isActive();
     }

@@ -31,7 +31,8 @@ public class AuthController {
             @RequestParam("name") String name,
             @RequestParam("email") String email,
             @RequestParam("password") String password,
-            @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture) {
+            @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture
+    ) {
 
         authService.register(new RegisterRequest(name, email, password, profilePicture));
         return ResponseEntity.status(HttpStatus.CREATED).body("Success: User registered");

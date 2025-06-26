@@ -49,7 +49,6 @@ public class MessageService {
         var userDto = userService.getUserSignedIn();
         var ticket = ticketService.getTicketById(ticketId);
 
-
         var user = new User(userDto);
         var message = new Message(request, user, ticket);
 
