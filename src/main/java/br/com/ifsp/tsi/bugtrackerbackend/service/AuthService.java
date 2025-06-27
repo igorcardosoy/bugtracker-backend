@@ -64,7 +64,7 @@ public class AuthService {
         }
 
         Set<Role> roles = new HashSet<>();
-        Optional<Role> userRole = roleRepository.findByName(UserRole.USER);
+        Optional<Role> userRole = roleRepository.findByName(UserRole.ROLE_USER);
 
         if (userRole.isEmpty()) throw new RoleNotFoundException("Role is not found.", HttpStatus.NOT_FOUND);
 
