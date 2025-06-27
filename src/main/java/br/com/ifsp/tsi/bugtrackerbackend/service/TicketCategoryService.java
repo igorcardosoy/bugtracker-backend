@@ -1,11 +1,12 @@
 package br.com.ifsp.tsi.bugtrackerbackend.service;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketCategoryDto;
+import br.com.ifsp.tsi.bugtrackerbackend.exception.TicketCategoryNotFoundException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.TicketCategory;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketCategoryRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,9 +18,7 @@ public class TicketCategoryService {
     }
 
     public List<TicketCategory> getAllCategories() {
-        return new ArrayList<>(
-                ticketCategoryRepository.findAll()
-        );
+        return ticketCategoryRepository.findAll();
     }
 
     public TicketCategory createTicketCategory(TicketCategoryDto request) {
@@ -29,16 +28,26 @@ public class TicketCategoryService {
     }
 
     public TicketCategory updateCategory(TicketCategoryDto request) {
+        if (ticketCategoryRepository.findById(request.ticketCategoryId()).isEmpty())
+            throw new TicketCategoryNotFoundException("Category not found", HttpStatus.NOT_FOUND);
+
         var ticketCategory = new TicketCategory(request);
 
         return ticketCategoryRepository.save(ticketCategory);
     }
 
-    public TicketCategory deleteCategory(Long categoryId) {
+    public void deleteCategory(Long categoryId) {
         var ticketCategory = ticketCategoryRepository.findById(categoryId);
 
-        ticketCategoryRepository.deleteById(categoryId);
+        if (ticketCategory.isEmpty()) {
+            throw new TicketCategoryNotFoundException("Category not found", HttpStatus.NOT_FOUND);
+        }
 
-        return ticketCategory.orElseGet(TicketCategory::new);
+        ticketCategoryRepository.deleteById(categoryId);
+    }
+
+    public TicketCategory getCategoryById(long categoryId) {
+        return ticketCategoryRepository.findById(categoryId)
+                                       .orElse(null);
     }
 }

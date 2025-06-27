@@ -1,6 +1,7 @@
 package br.com.ifsp.tsi.bugtrackerbackend.service;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.ProfilePictureException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
@@ -69,12 +70,11 @@ public class UserService implements UserDetailsService {
     }
 
     public ProfilePictureDto getUserProfilePicture(UserDto userDTO) throws IOException {
-        if (userDTO.profilePicture() == null || userDTO.profilePicture().isEmpty())
+        if (userDTO.profilePicturePath() == null || userDTO.profilePicturePath().isEmpty())
             throw new ProfilePictureException("Foto de perfil não encontrada.", HttpStatus.NOT_FOUND);
 
-
         String uploadDir = "uploads/profile-pictures/";
-        File file = new File(uploadDir + userDTO.profilePicture());
+        File file = new File(uploadDir + userDTO.profilePicturePath());
 
         return new ProfilePictureDto(Files.readAllBytes(file.toPath()), "image/png", String.valueOf(file.length()));
     }
@@ -82,26 +82,32 @@ public class UserService implements UserDetailsService {
     public List<Rating> getUserRatings(UserDto userDTO) {
         var ratings = ratingRepository.findAll();
 
-        return ratings.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+        return ratings.stream().filter(r -> r.getSender().getUserId().equals(userDTO.userId()))
                 .toList();
     }
 
     public List<Ticket> getUserTickets(UserDto userDTO) {
         var tickets = ticketRepository.findAll();
 
-        return tickets.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+        return tickets.stream().filter(r -> r.getSender().getUserId().equals(userDTO.userId()))
                 .toList();
     }
 
     public List<Message> getUserMessages(UserDto userDTO) {
         var messages = messageRepository.findAll();
 
-        return messages.stream().filter(r -> r.getSender().getUserId().equals(userDTO.id()))
+        return messages.stream().filter(r -> r.getSender().getUserId().equals(userDTO.userId()))
                 .toList();
     }
 
-    public User updateUser(UserDto updateUserRequest) {
-        var user = new User(updateUserRequest);
+    public User updateUser(UpdateUserDTO updateUserRequest) {
+        var userDto = getUserSignedIn();
+        var user = new User(userDto);
+
+        if (!updateUserRequest.profilePicture().isEmpty())
+            user.setProfilePicture(
+                    ProfilePictureExtensions.saveProfilePicture(updateUserRequest.profilePicture())
+            );
 
         return userRepository.save(user);
     }

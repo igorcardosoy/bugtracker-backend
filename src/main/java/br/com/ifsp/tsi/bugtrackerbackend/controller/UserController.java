@@ -1,6 +1,7 @@
 package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
@@ -10,6 +11,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
 import java.util.List;
@@ -72,9 +74,15 @@ public class UserController {
     }
 
     @PutMapping()
-    public ResponseEntity<User> updateUser(@RequestBody UserDto updateUserRequest) {
+    public ResponseEntity<User> updateUser(
+            @RequestParam("name") String name,
+            @RequestParam("email") String email,
+            @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture
+    ) {
         return ResponseEntity.ok(
-                userService.updateUser(updateUserRequest)
+                userService.updateUser(
+                        new UpdateUserDTO(name, email, profilePicture)
+                )
         );
     }
 }

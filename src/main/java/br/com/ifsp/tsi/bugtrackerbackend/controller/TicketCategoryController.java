@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.controller;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketCategoryDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.TicketCategory;
 import br.com.ifsp.tsi.bugtrackerbackend.service.TicketCategoryService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -30,30 +31,29 @@ public class TicketCategoryController {
     public ResponseEntity<TicketCategory> createCategory(
             @RequestBody TicketCategoryDto request
     ) {
-        return ResponseEntity.ok(
+        return ResponseEntity.status(HttpStatus.CREATED).body(
                 ticketCategoryService.createTicketCategory(request)
         );
     }
 
-    @PatchMapping("/{categoryId}/description")
+    @PatchMapping("/{categoryId}")
     public ResponseEntity<TicketCategory> updateCategory(
             @PathVariable Long categoryId,
-            @RequestBody String description,
-            @RequestBody Boolean isActive
+            @RequestBody TicketCategoryDto request
     ) {
         return ResponseEntity.ok(
                 ticketCategoryService.updateCategory(
-                        new TicketCategoryDto(categoryId, description, isActive)
+                        new TicketCategoryDto(categoryId, request.description(), request.isActive())
                 )
         );
     }
 
     @DeleteMapping("/{categoryId}")
-    public ResponseEntity<TicketCategory> deleteCategory(
+    public ResponseEntity<?> deleteCategory(
             @PathVariable Long categoryId
     ) {
-        return ResponseEntity.ok(
-                ticketCategoryService.deleteCategory(categoryId)
-        );
+        ticketCategoryService.deleteCategory(categoryId);
+
+        return ResponseEntity.noContent().build();
     }
 }

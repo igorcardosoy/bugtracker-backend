@@ -3,7 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.util;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.JwtResponse;
-import io.jsonwebtoken.*;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
@@ -13,8 +13,8 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
 
 import javax.crypto.SecretKey;
-import java.security.Key;
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
@@ -37,7 +37,7 @@ public class JwtUtil {
     public String generateJwtToken(UserDto userDto) {
         return Jwts.builder()
                 .subject(userDto.email())
-                .claim("id", userDto.id())
+                .claim("id", userDto.userId())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(jwtSecret)

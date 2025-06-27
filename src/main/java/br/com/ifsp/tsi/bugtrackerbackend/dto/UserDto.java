@@ -7,11 +7,11 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 
 public record UserDto(
-        Long id,
+        Long userId,
         String name,
         String email,
         @JsonIgnore String password,
-        String profilePicture,
+        String profilePicturePath,
         Collection<? extends GrantedAuthority> authorities
 ) implements UserDetails {
 
