@@ -1,12 +1,13 @@
 package br.com.ifsp.tsi.bugtrackerbackend.service;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketCategoryDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticketCategory.TicketCategoryRequestDTO;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticketCategory.TicketCategoryResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.TicketCategoryNotFoundException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.TicketCategory;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketCategoryRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -17,33 +18,47 @@ public class TicketCategoryService {
         this.ticketCategoryRepository = ticketCategoryRepository;
     }
 
-    public List<TicketCategory> getAllCategories() {
-        return ticketCategoryRepository.findAll();
+    public List<TicketCategoryResponseDTO> getAllCategories() {
+        var ticketCategories = ticketCategoryRepository.findAll();
+
+        return BuildTicketCategoryResponseDTOs(ticketCategories);
     }
 
-    public TicketCategory createTicketCategory(TicketCategoryDto request) {
+    private ArrayList<TicketCategoryResponseDTO> BuildTicketCategoryResponseDTOs(List<TicketCategory> ticketCategories) {
+        var ticketCategoryResponseDTOs = new ArrayList<TicketCategoryResponseDTO>();
+
+        for (TicketCategory ticketCategory : ticketCategories)
+            ticketCategoryResponseDTOs.add(TicketCategoryResponseDTO.fromTicketCategory(ticketCategory));
+
+        return ticketCategoryResponseDTOs;
+    }
+
+    public TicketCategoryResponseDTO createTicketCategory(TicketCategoryRequestDTO request) {
         var ticketCategory = new TicketCategory(request);
 
-        return ticketCategoryRepository.save(ticketCategory);
+        var savedTicketCategory = ticketCategoryRepository.save(ticketCategory);
+
+        return TicketCategoryResponseDTO.fromTicketCategory(savedTicketCategory);
     }
 
-    public TicketCategory updateCategory(TicketCategoryDto request) {
-        if (ticketCategoryRepository.findById(request.ticketCategoryId()).isEmpty())
-            throw new TicketCategoryNotFoundException("Category not found", HttpStatus.NOT_FOUND);
+    public void updateCategory(long ticketCategoryId, TicketCategoryRequestDTO request) {
+        if (ticketCategoryRepository.findById(ticketCategoryId).isEmpty())
+            throw new TicketCategoryNotFoundException();
 
         var ticketCategory = new TicketCategory(request);
 
-        return ticketCategoryRepository.save(ticketCategory);
+        ticketCategory.setTicketCategoryId(ticketCategoryId);
+
+        ticketCategoryRepository.save(ticketCategory);
     }
 
-    public void deleteCategory(Long categoryId) {
-        var ticketCategory = ticketCategoryRepository.findById(categoryId);
+    public void deleteCategory(long ticketCategoryId) {
+        var ticketCategory = ticketCategoryRepository.findById(ticketCategoryId);
 
-        if (ticketCategory.isEmpty()) {
-            throw new TicketCategoryNotFoundException("Category not found", HttpStatus.NOT_FOUND);
-        }
+        if (ticketCategory.isEmpty())
+            throw new TicketCategoryNotFoundException();
 
-        ticketCategoryRepository.deleteById(categoryId);
+        ticketCategoryRepository.deleteById(ticketCategoryId);
     }
 
     public TicketCategory getCategoryById(long categoryId) {
