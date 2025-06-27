@@ -1,6 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketCategoryDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticketCategory.TicketCategoryRequestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -18,8 +18,7 @@ public class TicketCategory {
     private String description;
     private boolean isActive;
 
-    public TicketCategory(TicketCategoryDto request) {
-        this.ticketCategoryId = request.ticketCategoryId();
+    public TicketCategory(TicketCategoryRequestDTO request) {
         this.description = request.description();
         this.isActive = request.isActive();
     }

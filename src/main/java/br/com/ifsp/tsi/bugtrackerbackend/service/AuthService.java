@@ -28,13 +28,11 @@ import java.util.Set;
 @Service
 @Log4j2
 public class AuthService {
-
     private final JwtUtil jwtUtil;
     private final AuthenticationManager authenticationManager;
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final RoleRepository roleRepository;
-
 
     public AuthService(
             JwtUtil jwtUtil,

@@ -1,6 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.MessageDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.message.MessageRequestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -30,9 +30,15 @@ public class Message {
 
     private boolean wasEdited;
 
-    public Message(MessageDto request, User sender, Ticket ticket) {
+    public Message(
+            MessageRequestDTO request,
+            User sender,
+            Ticket ticket
+    ) {
         this.message = request.message();
+        this.timestamp = request.timestamp();
         this.ticket = ticket;
         this.sender = sender;
+        this.wasEdited = false;
     }
 }
