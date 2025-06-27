@@ -1,13 +1,11 @@
 package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
-import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.rating.RatingResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.service.RatingService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
 
 @RestController
 @RequestMapping("/bugtracker/ratings")
@@ -20,16 +18,16 @@ public class RatingController {
     }
 
     @GetMapping("/tickets/{ticketId}")
-    public ResponseEntity<List<Rating>> getAllTicketRatings (
+    public ResponseEntity<RatingResponseDTO> getTicketRating (
             @PathVariable("ticketId") long ticketId
     ) {
         return ResponseEntity.ok(
-                ratingService.getAllRatingsByTicket(ticketId)
+                ratingService.getRatingByTicketId(ticketId)
         );
     }
 
     @PostMapping("/tickets/{ticketId}")
-    public ResponseEntity<Rating> createTicketRating (
+    public ResponseEntity<RatingResponseDTO> createTicketRating (
             @PathVariable("ticketId") long ticketId,
             @RequestParam float ratingValue
     ) {
@@ -39,12 +37,12 @@ public class RatingController {
     }
 
     @PatchMapping("/{ratingId}")
-    public ResponseEntity<Rating> updateRatingValue (
+    public ResponseEntity<RatingResponseDTO> updateRatingValue (
             @PathVariable("ratingId") long ratingId,
             @RequestParam float ratingValue
     ) {
-        return ResponseEntity.ok(
-                ratingService.updateRating(ratingId, ratingValue)
-        );
+        ratingService.updateRating(ratingId, ratingValue);
+
+        return ResponseEntity.noContent().build();
     }
 }

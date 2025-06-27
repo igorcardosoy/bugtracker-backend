@@ -1,7 +1,7 @@
 package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketDto;
-import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketRequestDTO;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
 import br.com.ifsp.tsi.bugtrackerbackend.service.TicketService;
 import org.springframework.http.HttpStatus;
@@ -22,32 +22,32 @@ public class TicketController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<Ticket>> getAllTickets() {
+    public ResponseEntity<List<TicketResponseDTO>> getAllTickets() {
         return ResponseEntity.ok(
                 ticketService.getAllTickets()
         );
     }
 
     @PostMapping()
-    public ResponseEntity<Ticket> createTicket(
-            @RequestBody TicketDto request
+    public ResponseEntity<TicketResponseDTO> createTicket(
+            @RequestBody TicketRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                              .body(ticketService.createTicket(request));
     }
 
     @PatchMapping("/{ticketId}/status")
-    public ResponseEntity<Ticket> updateTicketStatus (
+    public ResponseEntity<?> updateTicketStatus (
             @PathVariable("ticketId") long ticketId,
             @RequestParam TicketStatus status
     ) {
-        return ResponseEntity.ok(
-                ticketService. updateTicketStatus(ticketId, status)
-        );
+        ticketService.updateTicketStatus(ticketId, status);
+
+        return ResponseEntity.notFound().build();
     }
 
     @DeleteMapping("/{ticketId}")
-    public ResponseEntity<Ticket> deleteTicket (
+    public ResponseEntity<TicketResponseDTO> deleteTicket (
             @PathVariable Long ticketId
     ) {
         ticketService.deleteTicket(ticketId);

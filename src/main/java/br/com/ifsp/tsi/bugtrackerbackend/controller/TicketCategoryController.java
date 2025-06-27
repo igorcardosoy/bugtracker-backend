@@ -1,7 +1,7 @@
 package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketCategoryDto;
-import br.com.ifsp.tsi.bugtrackerbackend.model.entity.TicketCategory;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticketCategory.TicketCategoryRequestDTO;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticketCategory.TicketCategoryResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.service.TicketCategoryService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +21,15 @@ public class TicketCategoryController {
     }
 
     @GetMapping()
-    public ResponseEntity<List<TicketCategory>> getCategories() {
+    public ResponseEntity<List<TicketCategoryResponseDTO>> getCategories() {
         var categories = ticketCategoryService.getAllCategories();
 
         return ResponseEntity.ok(categories);
     }
 
     @PostMapping()
-    public ResponseEntity<TicketCategory> createCategory(
-            @RequestBody TicketCategoryDto request
+    public ResponseEntity<TicketCategoryResponseDTO> createCategory(
+            @RequestBody TicketCategoryRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 ticketCategoryService.createTicketCategory(request)
@@ -37,15 +37,16 @@ public class TicketCategoryController {
     }
 
     @PatchMapping("/{categoryId}")
-    public ResponseEntity<TicketCategory> updateCategory(
+    public ResponseEntity<?> updateCategory(
             @PathVariable Long categoryId,
-            @RequestBody TicketCategoryDto request
+            @RequestBody TicketCategoryRequestDTO request
     ) {
-        return ResponseEntity.ok(
-                ticketCategoryService.updateCategory(
-                        new TicketCategoryDto(categoryId, request.description(), request.isActive())
-                )
+        ticketCategoryService.updateCategory(
+                categoryId,
+                request
         );
+
+        return ResponseEntity.noContent().build();
     }
 
     @DeleteMapping("/{categoryId}")

@@ -1,6 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.TicketDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketRequestDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
@@ -50,16 +50,17 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "reicever_id")
-    private User reicever;
+    private User receiver;
 
     private LocalDateTime lastUpdate;
 
-    public Ticket(TicketDto request, User user, TicketCategory category) {
+    public Ticket(TicketRequestDTO request, User user, User receiver, TicketCategory category) {
         this.user = user;
         this.sender = user;
+        this.receiver = receiver;
         this.ticketCategory = category;
         this.description = request.description();
-        this.ticketStatus = request.ticketStatus();
+        this.ticketStatus = TicketStatus.valueOf(request.ticketStatus());
         this.timestamp = request.timestamp();
     }
 }

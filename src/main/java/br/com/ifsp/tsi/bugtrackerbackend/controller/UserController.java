@@ -75,13 +75,14 @@ public class UserController {
 
     @PutMapping()
     public ResponseEntity<User> updateUser(
-            @RequestParam("name") String name,
-            @RequestParam("email") String email,
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "email", required = false) String email,
+            @RequestParam(value = "password", required = false) String password,
             @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
         return ResponseEntity.ok(
                 userService.updateUser(
-                        new UpdateUserDTO(name, email, profilePicture)
+                        new UpdateUserDTO(name, email, password, profilePicture)
                 )
         );
     }

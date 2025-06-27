@@ -1,7 +1,7 @@
 package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
-import br.com.ifsp.tsi.bugtrackerbackend.dto.MessageDto;
-import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.message.MessageRequestDTO;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.message.MessageResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.service.MessageService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,7 +21,7 @@ public class MessageController {
     }
 
     @GetMapping("/tickets/{ticketId}")
-    public ResponseEntity<List<Message>> getAllMessagesByTicket (
+    public ResponseEntity<List<MessageResponseDTO>> getAllMessagesByTicket (
             @PathVariable("ticketId") long ticketId
     ) {
         return ResponseEntity.ok(
@@ -30,9 +30,9 @@ public class MessageController {
     }
 
     @PostMapping("/tickets/{ticketId}")
-    public ResponseEntity<Message> createTicketMessage (
+    public ResponseEntity<MessageResponseDTO> createTicketMessage (
             @PathVariable("ticketId") long ticketId,
-            @RequestBody MessageDto request
+            @RequestBody MessageRequestDTO request
     ) {
         return ResponseEntity.status(HttpStatus.CREATED).body(
                 messageService.createTicketMessage(ticketId, request)
@@ -40,12 +40,12 @@ public class MessageController {
     }
 
     @PatchMapping("/{messageId}")
-    public ResponseEntity<Message> updateMessage (
+    public ResponseEntity<?> updateMessage (
             @PathVariable("messageId") long messageId,
             @RequestParam String message
     ) {
-        return ResponseEntity.ok(
-                messageService.updateMessage(messageId, message)
-        );
+        messageService.updateMessage(messageId, message);
+
+        return ResponseEntity.noContent().build();
     }
 }
