@@ -76,6 +76,10 @@ public class UserService implements UserDetailsService {
         String uploadDir = "uploads/profile-pictures/";
         File file = new File(uploadDir + userDTO.profilePicturePath());
 
+        if (!file.exists() || !file.isFile()) {
+            throw new ProfilePictureException("Foto de perfil não encontrada.", HttpStatus.NOT_FOUND);
+        }
+
         return new ProfilePictureDto(Files.readAllBytes(file.toPath()), "image/png", String.valueOf(file.length()));
     }
 
@@ -104,10 +108,18 @@ public class UserService implements UserDetailsService {
         var userDto = getUserSignedIn();
         var user = new User(userDto);
 
-        if (!updateUserRequest.profilePicture().isEmpty())
-            user.setProfilePicture(
-                    ProfilePictureExtensions.saveProfilePicture(updateUserRequest.profilePicture())
-            );
+        if (updateUserRequest.name() != null && !updateUserRequest.name().isEmpty())
+            user.setName(updateUserRequest.name());
+
+        if (updateUserRequest.email() != null && !updateUserRequest.email().isEmpty())
+            user.setEmail(updateUserRequest.email());
+
+        if (updateUserRequest.password() != null && !updateUserRequest.password().isEmpty())
+            user.setPassword(updateUserRequest.password());
+
+        if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
+            user.setProfilePicture(ProfilePictureExtensions.saveProfilePicture(updateUserRequest.profilePicture()));
+        }
 
         return userRepository.save(user);
     }
