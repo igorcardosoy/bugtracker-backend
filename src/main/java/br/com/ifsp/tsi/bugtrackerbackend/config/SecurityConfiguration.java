@@ -24,12 +24,10 @@ public class SecurityConfiguration {
 
     private final AuthEntryPointJwt authEntryPoint;
     private final AuthTokenFilter authTokenFilter;
-    private final UserService userService;
 
-    public SecurityConfiguration(AuthEntryPointJwt authEntryPoint, AuthTokenFilter authTokenFilter, UserService userService) {
+    public SecurityConfiguration(AuthEntryPointJwt authEntryPoint, AuthTokenFilter authTokenFilter) {
         this.authEntryPoint = authEntryPoint;
         this.authTokenFilter = authTokenFilter;
-        this.userService = userService;
     }
 
     @Bean
@@ -39,7 +37,9 @@ public class SecurityConfiguration {
 
     @Bean
     @Primary
-    public AuthenticationManagerBuilder configureAuthenticationManagerBuilder(AuthenticationManagerBuilder authenticationManagerBuilder) throws Exception {
+    public AuthenticationManagerBuilder configureAuthenticationManagerBuilder(
+            AuthenticationManagerBuilder authenticationManagerBuilder,
+            UserService userService) throws Exception {
         authenticationManagerBuilder.userDetailsService(userService).passwordEncoder(passwordEncoder());
         return authenticationManagerBuilder;
     }

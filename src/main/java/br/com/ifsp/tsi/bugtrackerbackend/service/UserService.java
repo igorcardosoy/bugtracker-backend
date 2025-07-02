@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.service;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
+import br.com.ifsp.tsi.bugtrackerbackend.exception.PasswordException;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.ProfilePictureException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
@@ -20,6 +21,7 @@ import org.springframework.security.core.context.SecurityContext;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.io.File;
@@ -35,17 +37,19 @@ public class UserService implements UserDetailsService {
     private final RatingRepository ratingRepository;
     private final TicketRepository ticketRepository;
     private final MessageRepository messageRepository;
+    private final PasswordEncoder passwordEncoder;
 
     public UserService(
             UserRepository userRepository,
             RatingRepository ratingRepository,
             TicketRepository ticketRepository,
-            MessageRepository messageRepository
+            MessageRepository messageRepository, PasswordEncoder passwordEncoder
     ) {
         this.userRepository = userRepository;
         this.ratingRepository = ratingRepository;
         this.ticketRepository = ticketRepository;
         this.messageRepository = messageRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -114,8 +118,19 @@ public class UserService implements UserDetailsService {
         if (updateUserRequest.name() != null && !updateUserRequest.name().isEmpty())
             user.setName(updateUserRequest.name());
 
-        if (updateUserRequest.password() != null && !updateUserRequest.password().isEmpty())
-            user.setPassword(updateUserRequest.password());
+        if (updateUserRequest.password() != null && !updateUserRequest.password().isEmpty()) {
+            if (updateUserRequest.newPassword() == null || updateUserRequest.newPassword().isEmpty())
+                throw new PasswordException("New password must be provided.", HttpStatus.BAD_REQUEST);
+
+            if (!passwordEncoder.matches(updateUserRequest.password(), user.getPassword()))
+                throw new PasswordException("Current password is incorrect.", HttpStatus.UNAUTHORIZED);
+
+            if (updateUserRequest.newPassword().equals(updateUserRequest.password()))
+                throw new PasswordException("New password must be different from the current password.", HttpStatus.BAD_REQUEST);
+
+
+            user.setPassword(passwordEncoder.encode(updateUserRequest.newPassword()));
+        }
 
         if (user.getProfilePicture() != null)
             user.setProfilePicture(ProfilePictureExtensions.saveProfilePicture(updateUserRequest.profilePicture()));
