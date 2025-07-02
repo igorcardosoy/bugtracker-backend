@@ -8,6 +8,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
 import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
@@ -73,16 +74,16 @@ public class UserController {
         );
     }
 
-    @PutMapping()
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<User> updateUser(
             @RequestParam(value = "name", required = false) String name,
-            @RequestParam(value = "email", required = false) String email,
             @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "newPassword", required = false) String newPassword,
             @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
         return ResponseEntity.ok(
                 userService.updateUser(
-                        new UpdateUserDTO(name, email, password, profilePicture)
+                        new UpdateUserDTO(name, password, newPassword, profilePicture)
                 )
         );
     }

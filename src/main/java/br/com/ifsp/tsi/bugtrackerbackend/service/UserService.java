@@ -12,6 +12,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.repository.MessageRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.RatingRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.UserRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -26,6 +27,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.util.List;
 
+@Slf4j
 @Service
 public class UserService implements UserDetailsService {
 
@@ -106,20 +108,17 @@ public class UserService implements UserDetailsService {
 
     public User updateUser(UpdateUserDTO updateUserRequest) {
         var userDto = getUserSignedIn();
-        var user = new User(userDto);
+        var user = userRepository.findById(userDto.userId())
+                             .orElseThrow(() -> new UsernameNotFoundException("User not found with id: " + userDto.userId()));
 
         if (updateUserRequest.name() != null && !updateUserRequest.name().isEmpty())
             user.setName(updateUserRequest.name());
 
-        if (updateUserRequest.email() != null && !updateUserRequest.email().isEmpty())
-            user.setEmail(updateUserRequest.email());
-
         if (updateUserRequest.password() != null && !updateUserRequest.password().isEmpty())
             user.setPassword(updateUserRequest.password());
 
-        if (user.getProfilePicture() == null || user.getProfilePicture().isEmpty()) {
+        if (user.getProfilePicture() != null)
             user.setProfilePicture(ProfilePictureExtensions.saveProfilePicture(updateUserRequest.profilePicture()));
-        }
 
         return userRepository.save(user);
     }
