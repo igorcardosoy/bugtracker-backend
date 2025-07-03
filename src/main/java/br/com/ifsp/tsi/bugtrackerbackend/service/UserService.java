@@ -132,8 +132,10 @@ public class UserService implements UserDetailsService {
             user.setPassword(passwordEncoder.encode(updateUserRequest.newPassword()));
         }
 
-        if (user.getProfilePicture() != null)
+        if (updateUserRequest.profilePicture() != null) {
+            ProfilePictureExtensions.removeOldProfilePicture(user.getProfilePicture());
             user.setProfilePicture(ProfilePictureExtensions.saveProfilePicture(updateUserRequest.profilePicture()));
+        }
 
         return userRepository.save(user);
     }

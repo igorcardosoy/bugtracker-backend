@@ -8,6 +8,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
 import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -17,6 +18,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/bugtracker/users")
 @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
@@ -81,6 +83,7 @@ public class UserController {
             @RequestParam(value = "newPassword", required = false) String newPassword,
             @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture
     ) {
+
         return ResponseEntity.ok(
                 userService.updateUser(
                         new UpdateUserDTO(name, password, newPassword, profilePicture)

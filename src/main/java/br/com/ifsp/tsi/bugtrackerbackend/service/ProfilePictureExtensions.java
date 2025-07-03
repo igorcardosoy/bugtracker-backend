@@ -36,4 +36,19 @@ public class ProfilePictureExtensions {
             throw new ProfilePictureException("Não foi possível salvar a imagem de perfil: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
+
+    public static void removeOldProfilePicture(String oldFileName) {
+        if (oldFileName == null || oldFileName.isEmpty()) {
+            return;
+        }
+
+        try {
+            Path filePath = Paths.get("uploads/profile-pictures", oldFileName);
+            Files.deleteIfExists(filePath);
+            log.info("Imagem de perfil removida: {}", oldFileName);
+        } catch (IOException e) {
+            log.error("Erro ao remover imagem de perfil", e);
+            throw new ProfilePictureException("Não foi possível remover a imagem de perfil: " + e.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 }
