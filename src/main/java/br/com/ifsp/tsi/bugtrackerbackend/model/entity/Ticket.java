@@ -26,8 +26,8 @@ public class Ticket {
 
     private String description;
 
-    @OneToOne()
-    @JoinColumn(name = "ticket_category_id")
+    @ManyToOne
+    @JoinColumn(name = "ticket_category_id", nullable = false)
     private TicketCategory ticketCategory;
 
     @Enumerated(EnumType.STRING)
