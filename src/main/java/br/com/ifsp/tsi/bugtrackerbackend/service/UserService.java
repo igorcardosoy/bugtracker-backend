@@ -61,6 +61,7 @@ public class UserService implements UserDetailsService {
                 user.getUserId(),
                 user.getName(),
                 user.getEmail(),
+                user.getEmail(),
                 user.getPassword(),
                 user.getProfilePicture(),
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName().name()))

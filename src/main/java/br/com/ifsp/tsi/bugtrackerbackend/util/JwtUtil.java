@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.util;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.JwtResponse;
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
@@ -73,6 +74,32 @@ public class JwtUtil {
                 .verifyWith(jwtSecret)
                 .build()
                 .parseSignedClaims(authToken);
+    }
+
+    public String generateResetToken(String email) {
+        return Jwts.builder()
+                .subject(email)
+                .issuedAt(new Date())
+                .expiration(new Date(System.currentTimeMillis() + 60000 * 5)) // 5 minutes
+                .claim("type", "reset")
+                .signWith(jwtSecret)
+                .compact();
+    }
+
+    public boolean validateResetToken(String token, String email) {
+        try {
+            Claims claims = Jwts.parser()
+                    .verifyWith(jwtSecret)
+                    .build()
+                    .parseSignedClaims(token)
+                    .getPayload();
+
+            return email.equals(claims.getSubject()) &&
+                    "reset".equals(claims.get("type")) &&
+                    !claims.getExpiration().before(new Date());
+        } catch (Exception e) {
+            return false;
+        }
     }
 
 }

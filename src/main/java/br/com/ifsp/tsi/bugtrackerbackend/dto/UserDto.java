@@ -10,6 +10,8 @@ public record UserDto(
         Long userId,
         String name,
         String email,
+        @JsonIgnore
+        String username,
         @JsonIgnore String password,
         String profilePicturePath,
         Collection<? extends GrantedAuthority> authorities

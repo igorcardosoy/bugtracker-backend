@@ -10,3 +10,5 @@ select * from users;
 
 select * from users_roles;
 
+
+select * from password_reset_codes;
