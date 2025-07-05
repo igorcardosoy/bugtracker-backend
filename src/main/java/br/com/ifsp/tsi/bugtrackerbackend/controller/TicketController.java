@@ -3,11 +3,14 @@ package br.com.ifsp.tsi.bugtrackerbackend.controller;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketRequestDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
+import br.com.ifsp.tsi.bugtrackerbackend.service.TicketImageDto;
 import br.com.ifsp.tsi.bugtrackerbackend.service.TicketService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -28,12 +31,13 @@ public class TicketController {
         );
     }
 
-    @PostMapping()
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TicketResponseDTO> createTicket(
-            @RequestBody TicketRequestDTO request
+            @RequestPart("ticket") TicketRequestDTO ticketData,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
-                             .body(ticketService.createTicket(request));
+                .body(ticketService.createTicket(ticketData, images));
     }
 
     @PatchMapping("/{ticketId}/status")

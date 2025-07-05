@@ -8,6 +8,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -54,13 +55,18 @@ public class Ticket {
 
     private LocalDateTime lastUpdate;
 
-    public Ticket(TicketRequestDTO request, User user, User receiver, TicketCategory category) {
+    @ElementCollection
+    @CollectionTable(name = "ticket_image_paths", joinColumns = @JoinColumn(name = "ticket_id"))
+    @Column(name = "image_path")
+    private List<String> imagesAttachedPaths = new ArrayList<>();
+
+    public Ticket(TicketRequestDTO request, User user, User receiver, LocalDateTime timestamp, TicketCategory category) {
         this.user = user;
         this.sender = user;
         this.receiver = receiver;
         this.ticketCategory = category;
         this.description = request.description();
         this.ticketStatus = TicketStatus.valueOf(request.ticketStatus());
-        this.timestamp = request.timestamp();
+        this.timestamp = timestamp;
     }
 }
