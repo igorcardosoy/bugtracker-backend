@@ -115,6 +115,37 @@ public class TicketService {
         return TicketResponseDTO.fromTicket(savedTicket);
     }
 
+    public TicketResponseDTO updateTicket(Long id, TicketRequestDTO request, MultipartFile[] images) {
+        var ticket = getTicketById(id);
+
+        if (ticket == null) {
+            throw new TicketNotFoundException();
+        }
+
+        ticket.setDescription(request.description());
+        ticket.setTicketStatus(TicketStatus.valueOf(request.ticketStatus()));
+
+        var receiver = userService.getUserById(request.receiverId());
+        ticket.setReceiver(receiver);
+
+        var category = ticketCategoryService.getCategoryById(request.ticketCategoryId());
+        if (category == null)
+            throw new TicketCategoryNotFoundException();
+        ticket.setTicketCategory(category);
+
+        if (images != null && images.length > 0) {
+            List<String> paths = new ArrayList<>();
+            for (MultipartFile image : images) {
+                String path = saveTicketImage(image);
+                paths.add(path);
+            }
+            ticket.setImagesAttachedPaths(paths);
+        }
+
+        var savedTicket = ticketRepository.save(ticket);
+        return TicketResponseDTO.fromTicket(savedTicket);
+    }
+
     public void updateTicketStatus(long ticketId, TicketStatus status) {
         var ticket = getTicketById(ticketId);
 

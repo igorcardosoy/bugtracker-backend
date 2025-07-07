@@ -31,6 +31,17 @@ public class TicketController {
         );
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketResponseDTO> getTicketById(@PathVariable Long id) {
+        var ticket = ticketService.getTicketById(id);
+
+        if (ticket == null) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(TicketResponseDTO.fromTicket(ticket));
+    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TicketResponseDTO> createTicket(
             @RequestPart("ticket") TicketRequestDTO ticketData,
@@ -38,6 +49,15 @@ public class TicketController {
     ) {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ticketService.createTicket(ticketData, images));
+    }
+
+    @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<TicketResponseDTO> updateTicket(
+            @PathVariable Long id,
+            @RequestPart("ticket") TicketRequestDTO ticketData,
+            @RequestPart(value = "images", required = false) MultipartFile[] images
+    ) {
+        return ResponseEntity.ok(ticketService.updateTicket(id, ticketData, images));
     }
 
     @PatchMapping("/{ticketId}/status")
