@@ -8,6 +8,7 @@ public record TicketRequestDTO(
         long receiverId,
         long ticketCategoryId,
         long ratingId,
+        String title,
         String description,
         String ticketStatus,
         List<String> imagesAttachedPaths

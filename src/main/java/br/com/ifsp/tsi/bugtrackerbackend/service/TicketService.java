@@ -122,6 +122,7 @@ public class TicketService {
             throw new TicketNotFoundException();
         }
 
+        ticket.setTitle(request.title());
         ticket.setDescription(request.description());
         ticket.setTicketStatus(TicketStatus.valueOf(request.ticketStatus()));
 
@@ -132,15 +133,6 @@ public class TicketService {
         if (category == null)
             throw new TicketCategoryNotFoundException();
         ticket.setTicketCategory(category);
-
-        if (images != null && images.length > 0) {
-            List<String> paths = new ArrayList<>();
-            for (MultipartFile image : images) {
-                String path = saveTicketImage(image);
-                paths.add(path);
-            }
-            ticket.setImagesAttachedPaths(paths);
-        }
 
         var savedTicket = ticketRepository.save(ticket);
         return TicketResponseDTO.fromTicket(savedTicket);

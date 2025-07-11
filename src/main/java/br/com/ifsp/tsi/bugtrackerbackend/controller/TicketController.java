@@ -12,6 +12,10 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.List;
 
 @RestController
@@ -40,6 +44,24 @@ public class TicketController {
         }
 
         return ResponseEntity.ok(TicketResponseDTO.fromTicket(ticket));
+    }
+
+    @GetMapping("/image/{filename}")
+    public ResponseEntity<?> getTicketImage(@PathVariable String filename) throws IOException {
+        Path path = Paths.get("uploads/ticket-images/" + filename);
+
+        if (!Files.exists(path)) {
+            return ResponseEntity.notFound().build();
+        }
+
+        byte[] fileBytes = Files.readAllBytes(path);
+        String contentType = Files.probeContentType(path);
+        long length = fileBytes.length;
+
+        return ResponseEntity.ok()
+                .header("Content-Type", contentType)
+                .header("Content-Length", String.valueOf(length))
+                .body(fileBytes);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)

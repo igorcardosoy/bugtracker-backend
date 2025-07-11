@@ -25,6 +25,8 @@ public class Ticket {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String title;
+
     private String description;
 
     @ManyToOne
@@ -55,8 +57,8 @@ public class Ticket {
 
     private LocalDateTime lastUpdate;
 
-    @ElementCollection
-    @CollectionTable(name = "ticket_image_paths", joinColumns = @JoinColumn(name = "ticket_id"))
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ticket_images", joinColumns = @JoinColumn(name = "ticket_id"))
     @Column(name = "image_path")
     private List<String> imagesAttachedPaths = new ArrayList<>();
 
@@ -65,6 +67,7 @@ public class Ticket {
         this.sender = user;
         this.receiver = receiver;
         this.ticketCategory = category;
+        this.title = request.title();
         this.description = request.description();
         this.ticketStatus = TicketStatus.valueOf(request.ticketStatus());
         this.timestamp = timestamp;
