@@ -5,6 +5,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
+import java.util.List;
 
 public record UserDto(
         Long userId,
@@ -14,7 +15,9 @@ public record UserDto(
         String username,
         @JsonIgnore String password,
         String profilePicturePath,
-        Collection<? extends GrantedAuthority> authorities
+        @JsonIgnore
+        Collection<? extends GrantedAuthority> authorities,
+        List<String> roles
 ) implements UserDetails {
 
     @Override

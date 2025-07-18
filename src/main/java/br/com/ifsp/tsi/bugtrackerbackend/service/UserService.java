@@ -66,6 +66,7 @@ public class UserService implements UserDetailsService {
                 user.getProfilePicture(),
                 user.getRoles().stream().map(role -> new SimpleGrantedAuthority(role.getName().name()))
                         .toList()
+                , user.getRoles().stream().map(role -> role.getName().name()).toList()
         );
     }
 

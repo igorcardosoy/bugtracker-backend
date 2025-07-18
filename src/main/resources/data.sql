@@ -6,6 +6,10 @@ insert into roles (name) values
 
 select * from roles;
 
+update roles set name = 'ROLE_USER' where name = 'USER';
+update roles set name = 'ROLE_MODERATOR' where name = 'MODERATOR';
+update roles set name = 'ROLE_ADMIN' where name = 'ADMIN';
+
 select * from users;
 
 select * from users_roles;
