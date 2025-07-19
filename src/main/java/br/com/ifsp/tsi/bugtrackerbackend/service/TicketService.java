@@ -12,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -115,7 +114,7 @@ public class TicketService {
         return TicketResponseDTO.fromTicket(savedTicket);
     }
 
-    public TicketResponseDTO updateTicket(Long id, TicketRequestDTO request, MultipartFile[] images) {
+    public TicketResponseDTO updateTicket(Long id, TicketRequestDTO request) {
         var ticket = getTicketById(id);
 
         if (ticket == null) {

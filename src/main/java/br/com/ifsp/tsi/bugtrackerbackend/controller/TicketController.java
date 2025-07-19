@@ -3,7 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.controller;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketRequestDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
-import br.com.ifsp.tsi.bugtrackerbackend.service.TicketImageDto;
+
 import br.com.ifsp.tsi.bugtrackerbackend.service.TicketService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -76,10 +76,9 @@ public class TicketController {
     @PutMapping(value = "/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<TicketResponseDTO> updateTicket(
             @PathVariable Long id,
-            @RequestPart("ticket") TicketRequestDTO ticketData,
-            @RequestPart(value = "images", required = false) MultipartFile[] images
+            @RequestPart("ticket") TicketRequestDTO ticketData
     ) {
-        return ResponseEntity.ok(ticketService.updateTicket(id, ticketData, images));
+        return ResponseEntity.ok(ticketService.updateTicket(id, ticketData));
     }
 
     @PatchMapping("/{ticketId}/status")
