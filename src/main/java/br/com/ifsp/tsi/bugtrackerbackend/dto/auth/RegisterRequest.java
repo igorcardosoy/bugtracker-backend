@@ -1,11 +1,12 @@
 package br.com.ifsp.tsi.bugtrackerbackend.dto.auth;
 
-import org.springframework.web.multipart.MultipartFile;
+import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Role;
+
+import java.util.List;
 
 public record RegisterRequest(
     String name,
     String email,
-    String password,
-    MultipartFile profilePicture
+    List<Role> userRoles
 ) {
 }

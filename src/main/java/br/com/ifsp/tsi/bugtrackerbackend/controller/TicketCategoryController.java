@@ -12,7 +12,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bugtracker/categories")
-@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+@PreAuthorize("hasRole('USER') or hasRole('TECHNICIAN') or hasRole('ADMIN')")
 public class TicketCategoryController {
     private final TicketCategoryService ticketCategoryService;
 

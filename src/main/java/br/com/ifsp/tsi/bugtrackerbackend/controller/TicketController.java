@@ -20,7 +20,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/bugtracker/tickets")
-@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+@PreAuthorize("hasRole('USER') or hasRole('TECHNICIAN') or hasRole('ADMIN')")
 public class TicketController {
     private final TicketService ticketService;
 
