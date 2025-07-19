@@ -27,6 +27,13 @@ public class TicketCategoryController {
         return ResponseEntity.ok(categories);
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<TicketCategoryResponseDTO> getCategoryById(@PathVariable Long id) {
+        var category = ticketCategoryService.getCategoryById(id);
+
+        return ResponseEntity.ok(TicketCategoryResponseDTO.fromTicketCategory(category));
+    }
+
     @PostMapping()
     public ResponseEntity<TicketCategoryResponseDTO> createCategory(
             @RequestBody TicketCategoryRequestDTO request
