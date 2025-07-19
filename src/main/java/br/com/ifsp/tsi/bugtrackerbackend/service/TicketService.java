@@ -8,11 +8,21 @@ import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
+@Slf4j
 @Service
 public class TicketService {
     private final UserService userService;
@@ -50,25 +60,80 @@ public class TicketService {
         return tickets;
     }
 
-    public TicketResponseDTO createTicket(TicketRequestDTO request) {
+    public static String saveTicketImage(MultipartFile file) {
+        try {
+            String fileName = UUID.randomUUID() + "_" + file.getOriginalFilename();
+
+            Path uploadDir = Paths.get("uploads/ticket-images");
+
+            if (!Files.exists(uploadDir)) {
+                Files.createDirectories(uploadDir);
+            }
+
+            Path destination = uploadDir.resolve(fileName);
+            Files.copy(file.getInputStream(), destination, StandardCopyOption.REPLACE_EXISTING);
+
+            log.info("Imagem do ticket salva: {}", fileName);
+            return fileName;
+
+        } catch (IOException e) {
+            log.error("Erro ao salvar imagem do ticket", e);
+            throw new RuntimeException("Não foi possível salvar a imagem do ticket: " + e.getMessage(), e);
+        }
+    }
+
+    public TicketResponseDTO createTicket(TicketRequestDTO request, MultipartFile[] images) {
         var userDto = userService.getUserSignedIn();
         var sender = new User(userDto);
 
-        var receiver = userService.getUserById(request.senderId());
+        var receiver = userService.getUserById(request.receiverId());
 
         var category = ticketCategoryService.getCategoryById(request.ticketCategoryId());
 
         if (category == null)
             throw new TicketCategoryNotFoundException();
 
+        var timestamp = LocalDateTime.now();
+
         var ticket = new Ticket(
                 request,
                 sender,
                 receiver,
+                timestamp,
                 category);
+
+        if (images != null) {
+            for (MultipartFile image : images) {
+                String path = saveTicketImage(image);
+                ticket.getImagesAttachedPaths().add(path);
+            }
+        }
 
         var savedTicket = ticketRepository.save(ticket);
 
+        return TicketResponseDTO.fromTicket(savedTicket);
+    }
+
+    public TicketResponseDTO updateTicket(Long id, TicketRequestDTO request) {
+        var ticket = getTicketById(id);
+
+        if (ticket == null) {
+            throw new TicketNotFoundException();
+        }
+
+        ticket.setTitle(request.title());
+        ticket.setDescription(request.description());
+        ticket.setTicketStatus(TicketStatus.valueOf(request.ticketStatus()));
+
+        var receiver = userService.getUserById(request.receiverId());
+        ticket.setReceiver(receiver);
+
+        var category = ticketCategoryService.getCategoryById(request.ticketCategoryId());
+        if (category == null)
+            throw new TicketCategoryNotFoundException();
+        ticket.setTicketCategory(category);
+
+        var savedTicket = ticketRepository.save(ticket);
         return TicketResponseDTO.fromTicket(savedTicket);
     }
 

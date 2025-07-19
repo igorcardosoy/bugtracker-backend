@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.dto.ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record TicketResponseDTO(
     long ticketId,
@@ -10,9 +11,11 @@ public record TicketResponseDTO(
     long receiverId,
     long ticketCategoryId,
     long ratingId,
+    String title,
     String description,
     String ticketStatus,
-    LocalDateTime timestamp
+    LocalDateTime timestamp,
+    List<String> imagesAttachedPaths
 ) {
     public static TicketResponseDTO fromTicket(Ticket ticket) {
         var receiver = ticket.getReceiver();
@@ -33,9 +36,11 @@ public record TicketResponseDTO(
                 receiverId,
                 ticket.getTicketCategory().getTicketCategoryId(),
                 ratingId,
+                ticket.getTitle(),
                 ticket.getDescription(),
                 ticket.getTicketStatus().name(),
-                ticket.getTimestamp()
+                ticket.getTimestamp(),
+                ticket.getImagesAttachedPaths()
         );
     }
 }

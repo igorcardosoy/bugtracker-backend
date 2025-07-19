@@ -1,13 +1,15 @@
 package br.com.ifsp.tsi.bugtrackerbackend.dto.ticket;
 
-import java.time.LocalDateTime;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.util.List;
 
 public record TicketRequestDTO(
-        long senderId,
         long receiverId,
         long ticketCategoryId,
         long ratingId,
+        String title,
         String description,
         String ticketStatus,
-        LocalDateTime timestamp
+        List<String> imagesAttachedPaths
 ) { }
