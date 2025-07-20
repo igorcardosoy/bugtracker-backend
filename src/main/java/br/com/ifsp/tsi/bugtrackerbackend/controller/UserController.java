@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.controller;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
@@ -14,6 +15,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+
 
 import java.io.IOException;
 import java.util.List;
@@ -21,7 +24,7 @@ import java.util.List;
 @Slf4j
 @RestController
 @RequestMapping("/bugtracker/users")
-@PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
+@PreAuthorize("hasRole('USER') or hasRole('TECHNICIAN') or hasRole('ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -35,6 +38,16 @@ public class UserController {
         return ResponseEntity.ok(
                 userService.getUserSignedIn()
         );
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(UserDto.fromUser(user));
     }
 
     @GetMapping("/picture")

@@ -9,7 +9,6 @@ import br.com.ifsp.tsi.bugtrackerbackend.exception.*;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.PasswordResetCode;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Role;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
-import br.com.ifsp.tsi.bugtrackerbackend.model.enums.UserRole;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.PasswordResetCodeRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.RoleRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.UserRepository;
@@ -68,27 +67,25 @@ public class AuthService {
     public void register(RegisterRequest registerRequest) {
         verifyExistence(registerRequest.email());
 
-        String encodedPassword = passwordEncoder.encode(registerRequest.password());
-
-        String profilePicturePath = null;
-        if (registerRequest.profilePicture() != null && !registerRequest.profilePicture().isEmpty()) {
-            profilePicturePath = ProfilePictureExtensions.saveProfilePicture(registerRequest.profilePicture());
-        }
+        String randomInitialPassword = generateRamdomCode();
 
         Set<Role> roles = new HashSet<>();
-        Optional<Role> userRole = roleRepository.findByName(UserRole.ROLE_USER);
-
-        if (userRole.isEmpty()) throw new RoleNotFoundException("Role is not found.", HttpStatus.NOT_FOUND);
-
-        roles.add(userRole.get());
+        for (Role userRole : registerRequest.userRoles()) {
+            Optional<Role> role = roleRepository.findByName(userRole.getName());
+            if (role.isEmpty()) {
+                throw new RoleNotFoundException("Role " + userRole + " is not found.", HttpStatus.NOT_FOUND);
+            }
+            roles.add(role.get());
+        }
 
         User user = new User();
         user.setName(registerRequest.name());
         user.setEmail(registerRequest.email());
-        user.setPassword(encodedPassword);
-        user.setProfilePicture(profilePicturePath);
+        user.setPassword(passwordEncoder.encode(randomInitialPassword));
         user.setRoles(roles);
         userRepository.save(user);
+
+        emailService.sendPasswordResetEmail(user.getEmail(), randomInitialPassword);
 
         log.info("User registered successfully: {}", user.getEmail());
     }
@@ -111,8 +108,7 @@ public class AuthService {
         userRepository.findByEmail(email)
                 .orElseThrow(() -> new UserNotFoundException("User not found with email: " + email, HttpStatus.NOT_FOUND));
 
-        Random random = new Random();
-        String code = String.format("%06d", random.nextInt(1000000));
+        String code = generateRamdomCode();
 
         PasswordResetCode resetCode = new PasswordResetCode(email, code);
         passwordResetCodeRepository.save(resetCode);
@@ -122,6 +118,11 @@ public class AuthService {
         log.info("Password reset code sent to: {}", email);
     }
 
+    private static String generateRamdomCode() {
+        Random random = new Random();
+        String code = String.format("%06d", random.nextInt(1000000));
+        return code;
+    }
 
     public CodeVerificationResponse verifyResetCode(String email, String code) {
         PasswordResetCode resetCode = passwordResetCodeRepository.findByEmailAndCodeAndUsedFalse(email, code)
