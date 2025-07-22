@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.service;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UserPageDto;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.PasswordException;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.ProfilePictureException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
@@ -14,6 +15,8 @@ import br.com.ifsp.tsi.bugtrackerbackend.repository.RatingRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.UserRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -145,5 +148,11 @@ public class UserService implements UserDetailsService {
     public User getUserById(long id) {
         return userRepository.findById(id)
                              .orElse(null);
+    }
+
+    public UserPageDto list(int page, int pageSize) {
+        Page<User> pageUser = userRepository.findAll(PageRequest.of(page, pageSize));
+        List<UserDto> users = pageUser.get().map(UserDto::fromUser).toList();
+        return new UserPageDto(users, pageUser.getTotalElements(), pageUser.getTotalPages());
     }
 }
