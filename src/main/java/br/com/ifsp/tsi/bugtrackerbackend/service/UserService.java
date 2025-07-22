@@ -10,6 +10,7 @@ import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
+import br.com.ifsp.tsi.bugtrackerbackend.model.enums.UserRole;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.MessageRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.RatingRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.TicketRepository;
@@ -158,6 +159,10 @@ public class UserService implements UserDetailsService {
         Page<User> pageUser = userRepository.findAll(PageRequest.of(page, pageSize));
         List<UserDto> users = pageUser.get().map(UserDto::fromUser).toList();
         return new UserPageDto(users, pageUser.getTotalElements(), pageUser.getTotalPages());
+    }
+
+    public List<User> findByRolesName(UserRole role) {
+        return userRepository.findByRolesName(role);
     }
 
     public void deleteById(long id) {
