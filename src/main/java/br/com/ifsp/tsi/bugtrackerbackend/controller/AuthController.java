@@ -7,12 +7,15 @@ import br.com.ifsp.tsi.bugtrackerbackend.dto.passwordReset.VerifyCodeRequest;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.JwtResponse;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.LoginRequest;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.RegisterRequest;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.role.RoleResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.exception.RoleNotFoundException;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Role;
 import br.com.ifsp.tsi.bugtrackerbackend.repository.RoleRepository;
 import br.com.ifsp.tsi.bugtrackerbackend.service.AuthService;
+import br.com.ifsp.tsi.bugtrackerbackend.service.RoleService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -23,10 +26,12 @@ import java.util.stream.Collectors;
 public class AuthController {
 
     private final AuthService authService;
+    private final RoleService roleService;
     private final RoleRepository roleRepository;
 
-    public AuthController(AuthService authService, RoleRepository roleRepository) {
+    public AuthController(AuthService authService, RoleService roleService, RoleRepository roleRepository) {
         this.authService = authService;
+        this.roleService = roleService;
         this.roleRepository = roleRepository;
     }
 
@@ -67,5 +72,17 @@ public class AuthController {
     public ResponseEntity<String> resetPassword(@RequestBody ResetPasswordRequest request) {
         authService.resetPasswordWithToken(request.email(), request.newPassword(), request.token());
         return ResponseEntity.ok("Password reset successfully");
+    }
+
+    @GetMapping("/roles")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
+        return ResponseEntity.ok(roleService.getAllRoles());
+    }
+
+    @GetMapping("/roles/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<RoleResponseDTO> getRoleById(@PathVariable Long id) {
+        return ResponseEntity.ok(roleService.getRoleById(id));
     }
 }

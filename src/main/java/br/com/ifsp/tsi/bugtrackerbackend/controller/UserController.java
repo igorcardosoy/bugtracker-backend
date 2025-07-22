@@ -21,6 +21,7 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -33,13 +34,23 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
+  
     @GetMapping
     public ResponseEntity<UserPageDto> list(@RequestParam(defaultValue = "0") int page,
                                             @RequestParam(defaultValue = "10") int pageSize) {
         return ResponseEntity.ok(
                 userService.list(page, pageSize)
         );
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getUsers() {
+        List<User> users = userService.getAllUsers();
+        List<UserDto> userDtos = users.stream()
+                .map(UserDto::fromUser)
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(userDtos);
     }
 
     @GetMapping("/{id}")

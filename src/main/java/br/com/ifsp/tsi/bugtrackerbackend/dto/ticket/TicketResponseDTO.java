@@ -1,14 +1,15 @@
 package br.com.ifsp.tsi.bugtrackerbackend.dto.ticket;
 
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
+import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
 
 import java.time.LocalDateTime;
 import java.util.List;
 
 public record TicketResponseDTO(
     long ticketId,
-    long senderId,
-    long receiverId,
+    User sender,
+    User receiver,
     long ticketCategoryId,
     long ratingId,
     String title,
@@ -18,12 +19,6 @@ public record TicketResponseDTO(
     List<String> imagesAttachedPaths
 ) {
     public static TicketResponseDTO fromTicket(Ticket ticket) {
-        var receiver = ticket.getReceiver();
-        long receiverId = 0;
-
-        if (receiver != null)
-            receiverId = receiver.getUserId();
-
         var rating = ticket.getRating();
         long ratingId = 0;
 
@@ -32,8 +27,8 @@ public record TicketResponseDTO(
 
         return new TicketResponseDTO(
                 ticket.getTicketId(),
-                ticket.getSender().getUserId(),
-                receiverId,
+                ticket.getSender(),
+                ticket.getReceiver(),
                 ticket.getTicketCategory().getTicketCategoryId(),
                 ratingId,
                 ticket.getTitle(),
