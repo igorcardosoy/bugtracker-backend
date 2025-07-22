@@ -43,16 +43,6 @@ public class UserController {
         );
     }
 
-    @GetMapping
-    public ResponseEntity<List<UserDto>> getUsers() {
-        List<User> users = userService.getAllUsers();
-        List<UserDto> userDtos = users.stream()
-                .map(UserDto::fromUser)
-                .collect(Collectors.toList());
-
-        return ResponseEntity.ok(userDtos);
-    }
-
     @GetMapping("/{id}")
     public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
         User user = userService.getUserById(id);
