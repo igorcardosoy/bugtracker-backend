@@ -4,11 +4,11 @@ import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserPageDto;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
+import br.com.ifsp.tsi.bugtrackerbackend.model.enums.UserRole;
 import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -16,12 +16,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 
 import java.io.IOException;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @RestController
@@ -41,6 +39,12 @@ public class UserController {
         return ResponseEntity.ok(
                 userService.list(page, pageSize)
         );
+    }
+
+    @GetMapping("/roles/technician")
+    public ResponseEntity<List<User>> getTechnicians() {
+        List<User> technicians = userService.findByRolesName(UserRole.ROLE_TECHNICIAN);
+        return ResponseEntity.ok(technicians);
     }
 
     @GetMapping("/{id}")
@@ -110,5 +114,11 @@ public class UserController {
     @DeleteMapping("/{id}")
     public void deleteById(@PathVariable Long id) {
         this.userService.deleteById(id);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getSignedInUser() {
+        UserDto userSignedIn = userService.getUserSignedIn();
+        return ResponseEntity.ok(userSignedIn);
     }
 }
