@@ -42,6 +42,7 @@ public class JwtUtil {
                 .claim("roles", userDto.authorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))
+                .claim("name", userDto.name())
                 .issuedAt(new Date())
                 .expiration(new Date((new Date()).getTime() + jwtExpirationMs))
                 .signWith(jwtSecret)
