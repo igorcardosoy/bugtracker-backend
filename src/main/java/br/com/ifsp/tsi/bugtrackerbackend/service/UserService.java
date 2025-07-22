@@ -155,4 +155,8 @@ public class UserService implements UserDetailsService {
         List<UserDto> users = pageUser.get().map(UserDto::fromUser).toList();
         return new UserPageDto(users, pageUser.getTotalElements(), pageUser.getTotalPages());
     }
+
+    public void deleteById(long id) {
+        userRepository.deleteById(id);
+    }
 }
