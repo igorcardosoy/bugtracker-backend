@@ -74,13 +74,13 @@ public class AuthController {
         return ResponseEntity.ok("Password reset successfully");
     }
 
-    @GetMapping
+    @GetMapping("/roles")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<RoleResponseDTO>> getAllRoles() {
         return ResponseEntity.ok(roleService.getAllRoles());
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/roles/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<RoleResponseDTO> getRoleById(@PathVariable Long id) {
         return ResponseEntity.ok(roleService.getRoleById(id));
