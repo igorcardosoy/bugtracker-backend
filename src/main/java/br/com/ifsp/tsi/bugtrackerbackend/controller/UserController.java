@@ -3,6 +3,7 @@ package br.com.ifsp.tsi.bugtrackerbackend.controller;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UserPageDto;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketResponseDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
@@ -32,6 +33,14 @@ public class UserController {
 
     public UserController(UserService userService) {
         this.userService = userService;
+    }
+  
+    @GetMapping
+    public ResponseEntity<UserPageDto> list(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int pageSize) {
+        return ResponseEntity.ok(
+                userService.list(page, pageSize)
+        );
     }
 
     @GetMapping
@@ -106,5 +115,10 @@ public class UserController {
                         new UpdateUserDTO(name, password, newPassword, profilePicture)
                 )
         );
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Long id) {
+        this.userService.deleteById(id);
     }
 }
