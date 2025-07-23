@@ -6,6 +6,8 @@ public record UpdateUserDTO(
         String name,
         String password,
         String newPassword,
-        MultipartFile profilePicture
+        MultipartFile profilePicture,
+        String[] roles,
+        String email
 ) {
 }

@@ -106,9 +106,18 @@ public class UserController {
 
         return ResponseEntity.ok(
                 userService.updateUser(
-                        new UpdateUserDTO(name, password, newPassword, profilePicture)
+                        new UpdateUserDTO(name, password, newPassword, profilePicture, null, null)
                 )
         );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUserById(
+            @PathVariable Long id,
+            @RequestBody UpdateUserDTO updateUserRequest
+    ) {
+        UserDto updatedUser = userService.updateUserById(id, updateUserRequest);
+        return ResponseEntity.ok(updatedUser);
     }
 
     @DeleteMapping("/{id}")
