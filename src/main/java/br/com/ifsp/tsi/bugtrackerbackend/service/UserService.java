@@ -126,9 +126,6 @@ public class UserService implements UserDetailsService {
 
             user.getRoles().clear();
             for (String role : updateUserRequest.roles()) {
-
-                log.info("Adding role: {}", role);
-
                  Optional<Role> userRoles = roleRepository.findById(Long.valueOf(role));
 
                 if (userRoles.isEmpty())
@@ -139,7 +136,7 @@ public class UserService implements UserDetailsService {
             }
         }
 
-        if (updateUserRequest.email() != null && !updateUserRequest.email().isEmpty()) {
+        if (updateUserRequest.email() != null && !updateUserRequest.email().isEmpty() && !user.getEmail().equals(updateUserRequest.email())) {
             if (userRepository.existsByEmail(updateUserRequest.email()))
                 throw new IllegalArgumentException("Email already exists.");
 
