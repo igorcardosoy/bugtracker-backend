@@ -10,5 +10,4 @@ public class ExceptionWithHttpCode extends RuntimeException {
         super(message);
         this.httpStatus = httpStatus;
     }
-
 }

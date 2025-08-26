@@ -11,14 +11,14 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<String> handleGenericException(Exception ex) {
-        return new ResponseEntity<>("Error: " +  ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(ex.getMessage(), HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     @ExceptionHandler(ExceptionWithHttpCode.class)
     public ResponseEntity<String> handleExceptionWithHttpCode(ExceptionWithHttpCode ex) {
         return ResponseEntity
                 .status(ex.getHttpStatus())
-                .body("Error: " + ex.getMessage());
+                .body(ex.getMessage());
     }
 
 

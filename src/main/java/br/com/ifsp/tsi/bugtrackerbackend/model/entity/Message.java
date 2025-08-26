@@ -1,5 +1,6 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
+import br.com.ifsp.tsi.bugtrackerbackend.dto.message.MessageRequestDTO;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -26,4 +27,18 @@ public class Message {
     @ManyToOne
     @JoinColumn(name = "sender_id")
     private User sender;
+
+    private boolean wasEdited;
+
+    public Message(
+            MessageRequestDTO request,
+            User sender,
+            Ticket ticket
+    ) {
+        this.message = request.message();
+        this.timestamp = request.timestamp();
+        this.ticket = ticket;
+        this.sender = sender;
+        this.wasEdited = false;
+    }
 }

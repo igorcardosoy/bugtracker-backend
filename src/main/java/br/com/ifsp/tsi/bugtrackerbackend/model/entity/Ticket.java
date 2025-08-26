@@ -1,11 +1,14 @@
 package br.com.ifsp.tsi.bugtrackerbackend.model.entity;
 
+import br.com.ifsp.tsi.bugtrackerbackend.dto.ticket.TicketRequestDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.model.enums.TicketStatus;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -22,16 +25,19 @@ public class Ticket {
     @JoinColumn(name = "user_id")
     private User user;
 
+    private String title;
+
     private String description;
 
-    @OneToOne()
-    @JoinColumn(name = "ticket_category_id")
-    private TicketCategory ticketCategoryId;
+    @ManyToOne
+    @JoinColumn(name = "ticket_category_id", nullable = false)
+    private TicketCategory ticketCategory;
 
     @Enumerated(EnumType.STRING)
     private TicketStatus ticketStatus;
 
     @OneToMany(mappedBy = "ticket")
+    @JsonBackReference
     private List<Message> messages;
 
     private LocalDateTime timestamp;
@@ -42,9 +48,28 @@ public class Ticket {
 
     @ManyToOne
     @JoinColumn(name = "sender_id")
+    @JsonBackReference
     private User sender;
 
     @ManyToOne
     @JoinColumn(name = "reicever_id")
-    private User reicever;
+    private User receiver;
+
+    private LocalDateTime lastUpdate;
+
+    @ElementCollection(fetch = FetchType.EAGER)
+    @CollectionTable(name = "ticket_images", joinColumns = @JoinColumn(name = "ticket_id"))
+    @Column(name = "image_path")
+    private List<String> imagesAttachedPaths = new ArrayList<>();
+
+    public Ticket(TicketRequestDTO request, User user, User receiver, LocalDateTime timestamp, TicketCategory category) {
+        this.user = user;
+        this.sender = user;
+        this.receiver = receiver;
+        this.ticketCategory = category;
+        this.title = request.title();
+        this.description = request.description();
+        this.ticketStatus = TicketStatus.valueOf(request.ticketStatus());
+        this.timestamp = timestamp;
+    }
 }

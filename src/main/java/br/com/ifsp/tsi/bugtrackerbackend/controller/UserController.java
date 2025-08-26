@@ -1,24 +1,30 @@
 package br.com.ifsp.tsi.bugtrackerbackend.controller;
 
 import br.com.ifsp.tsi.bugtrackerbackend.dto.ProfilePictureDto;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UpdateUserDTO;
 import br.com.ifsp.tsi.bugtrackerbackend.dto.UserDto;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.JwtResponse;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.LoginRequest;
-import br.com.ifsp.tsi.bugtrackerbackend.dto.auth.RegisterRequest;
+import br.com.ifsp.tsi.bugtrackerbackend.dto.UserPageDto;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Message;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Rating;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.Ticket;
 import br.com.ifsp.tsi.bugtrackerbackend.model.entity.User;
+import br.com.ifsp.tsi.bugtrackerbackend.model.enums.UserRole;
 import br.com.ifsp.tsi.bugtrackerbackend.service.UserService;
-import org.springframework.http.HttpStatus;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
 
 import java.io.IOException;
 import java.util.List;
 
+@Slf4j
 @RestController
 @RequestMapping("/bugtracker/users")
+@PreAuthorize("hasRole('USER') or hasRole('TECHNICIAN') or hasRole('ADMIN')")
 public class UserController {
 
     private final UserService userService;
@@ -26,12 +32,29 @@ public class UserController {
     public UserController(UserService userService) {
         this.userService = userService;
     }
-
-    @GetMapping()
-    public ResponseEntity<UserDto> getUsers() {
+  
+    @GetMapping
+    public ResponseEntity<UserPageDto> list(@RequestParam(defaultValue = "0") int page,
+                                            @RequestParam(defaultValue = "10") int pageSize) {
         return ResponseEntity.ok(
-                userService.getUserSignedIn()
+                userService.list(page, pageSize)
         );
+    }
+
+    @GetMapping("/roles/technician")
+    public ResponseEntity<List<User>> getTechnicians() {
+        List<User> technicians = userService.findByRolesName(UserRole.ROLE_TECHNICIAN);
+        return ResponseEntity.ok(technicians);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        User user = userService.getUserById(id);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        return ResponseEntity.ok(UserDto.fromUser(user));
     }
 
     @GetMapping("/picture")
@@ -73,10 +96,38 @@ public class UserController {
         );
     }
 
-    @PutMapping()
-    public ResponseEntity<User> updateUser(@RequestBody LoginRequest updateUserRequest) {
+    @PutMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    public ResponseEntity<User> updateUser(
+            @RequestParam(value = "name", required = false) String name,
+            @RequestParam(value = "password", required = false) String password,
+            @RequestParam(value = "newPassword", required = false) String newPassword,
+            @RequestParam(value = "profilePicture", required = false) MultipartFile profilePicture
+    ) {
+
         return ResponseEntity.ok(
-                userService.updateUser(updateUserRequest)
+                userService.updateUser(
+                        new UpdateUserDTO(name, password, newPassword, profilePicture, null, null)
+                )
         );
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUserById(
+            @PathVariable Long id,
+            @RequestBody UpdateUserDTO updateUserRequest
+    ) {
+        UserDto updatedUser = userService.updateUserById(id, updateUserRequest);
+        return ResponseEntity.ok(updatedUser);
+    }
+
+    @DeleteMapping("/{id}")
+    public void deleteById(@PathVariable Long id) {
+        this.userService.deleteById(id);
+    }
+
+    @GetMapping("/me")
+    public ResponseEntity<UserDto> getSignedInUser() {
+        UserDto userSignedIn = userService.getUserSignedIn();
+        return ResponseEntity.ok(userSignedIn);
     }
 }

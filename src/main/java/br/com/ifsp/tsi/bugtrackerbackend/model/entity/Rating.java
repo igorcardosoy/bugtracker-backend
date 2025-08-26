@@ -21,4 +21,12 @@ public class Rating {
     @ManyToOne()
     @JoinColumn(name = "sender_id")
     private User sender;
+
+    private float ratingValue;
+
+    public Rating(float ratingValue, User user, Ticket ticket) {
+        this.ticket = ticket;
+        this.sender = user;
+        this.ratingValue = ratingValue;
+    }
 }
